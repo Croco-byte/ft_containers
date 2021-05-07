@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 11:14:11 by user42            #+#    #+#             */
-/*   Updated: 2021/05/04 16:10:46 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/06 12:20:20 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <math.h>
+
 
 namespace ft
 {
@@ -43,7 +45,7 @@ class	vector
 		typedef ft::reverse_iterator< const_iterator >			const_reverse_iterator;
 		typedef typename ft::vector< value_type >::iterator		InputIterator;
 
-		/* CONSTRUCTORS / DESTRUCTORS */
+		/* CONSTRUCTORS / DESTRUCTOR */
 		vector<T, A>();
 		vector<T, A>(size_type n, value_type const & val = value_type());
 		vector<T, A>(vector<T> const & src);
@@ -174,6 +176,7 @@ class	vector
 		> Operator <						OK
 		> Operator >=						OK
 		> Operator <=						OK
+	
 	---> Other
 		> swap								OK
 

@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/02 11:42:22 by user42            #+#    #+#             */
-/*   Updated: 2021/05/02 15:28:38 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/06 13:29:29 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class	reverse_iterator
 	
 	public:
 		reverse_iterator(): _it() {}
-		reverse_iterator(iterator_type it): _it(it - 1) {}
+		reverse_iterator(iterator_type it): _it(--it) {}
 		reverse_iterator(reverse_iterator< iterator_type > const & src): _it(src._it) {}
 
 		iterator_type		base(void)									const	{ return (this->_it); }
