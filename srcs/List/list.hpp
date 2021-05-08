@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 10:51:01 by user42            #+#    #+#             */
-/*   Updated: 2021/05/07 15:48:37 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/08 16:58:34 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,20 @@ class	list
 		void					splice(iterator position, list & x);
 		void					splice(iterator position, list & x, iterator i);
 		void					splice(iterator position, list & x, iterator first, iterator last);
+		void					remove(value_type const & val);
+		template < class Predicate >
+		void					remove_if (Predicate pred);
+		void					unique(void);
+		template < class BinaryPredicate >
+		void					unique(BinaryPredicate binary_pred);
+		void					sort(void);
+		template < class Compare >
+		void					sort(Compare comp);
+		void					reverse(void);
+		void					merge(list & x);
+		template < class Compare >
+		void					merge(list & x, Compare comp);
+
 
 	private:
 		/* CONTAINER ATTRIBUTES */
@@ -104,11 +118,16 @@ class	list
 		size_type	_size;
 
 		/* SOME PRIVATE HELPER FUNCTIONS */
-		void		free_list(void);
-		void		copy_from_source(list const & src);
-		void		add_before_beginning(void);
-		void		add_past_the_end(Node * last_element);
-		Node *		iterator_node(iterator position);
+		void			free_list(void);
+		void			copy_from_source(list const & src);
+		void			add_before_beginning(void);
+		void			add_past_the_end(Node * last_element);
+		Node *			iterator_node(iterator position);
+
+		static void		extract_from_list(list & x, Node * src_first, Node * src_last);
+		static void		integrate_elements(list & x, Node * pos_node, Node * src_first, Node * src_last);
+
+		static void		swap(Node * x, Node * y);
 
 };
 
@@ -159,13 +178,13 @@ class	list
 		> clear								OK
 
 	---> Operations
-		> splice
-		> remove
-		> remove_if
-		> unique
+		> splice							OK
+		> remove							OK
+		> remove_if							OK
+		> unique							OK
 		> merge
-		> sort
-		> reverse
+		> sort								OK
+		> reverse							OK
 
  ---> Non-member functions overload
 	---> Relational operators
@@ -181,5 +200,20 @@ class	list
 
 
 === REMARQUES ===
+
+ --> Dans le cadre de l'implémentation des listes, j'ai décidé de procéder de la manière suivante :
+		- Lorsqu'une liste est vide (size == 0), elle n'a aucun élément. Le premier élément pointe sur 0, il n'y a pas de before_begining ni de past_the_end.
+		- Lorsque j'ajoute le premier élément d'une liste, j'ajoute un élément before_beginning et past_the_end.
+	Ce qui a pour conséquence un crash du programme lorsqu'on tente de déréférencer un itérateur sur une liste vide. La STL précise en effet qu'il ne faut pas
+	tenter de déréférencer ce genre d'itérateurs, mais ne crash pas, car je pense qu'elle ajoute un élément before_beginning et past_the_end, même sur des listes
+	vides. Le comportement reste quand même globalement cohérent avec la STL.
+
+	Mon implémentation a l'avantage de la simplicité "conceptuelle", mais rend légèrement plus complexe l'implémentation des fonctions qui modifient la taille d'une,
+	ou de plusieurs listes (insert, push_back, splice...). En effet, il faut alors s'occuper des cas particuliers d'une opération qui vide entièrement une liste, ou
+	d'une opération qui ajoute un premier élément à une liste.
+
+ --> L'implémentation des itérateurs de listes ici rend impossible l'initialisation d'une liste à partir d'un array (comme c'est le cas dans la STL, et dans mon
+ 	 implémentation des vectors). En effet, les itérateurs de listes reposent sur des Node *. Peut-être à améliorer, et avoir un constructeur pour les itérateurs de
+	 listes qui repose sur des arrays (en les transformant en liste chaînée donc), pour coller au maximum à la STL.
 
 */

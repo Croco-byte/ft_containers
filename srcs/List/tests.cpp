@@ -6,13 +6,14 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 12:40:15 by user42            #+#    #+#             */
-/*   Updated: 2021/05/07 19:23:54 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/08 16:06:55 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <cmath>
 
 #include "list.hpp"
 
@@ -568,11 +569,37 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 }
 
+bool single_digit (const int& value) { return (value<10); }
+
+struct is_odd {
+	bool operator() (const int& value) { return (value%2)==1; }
+};
+
+bool same_integral_part (double first, double second)
+{ return ( int(first)==int(second) ); }
+
+struct is_near {
+  bool operator() (double first, double second)
+  { return (fabs(first-second)<5.0); }
+};
+
+bool compare_nocase (const std::string& first, const std::string& second)
+{
+	unsigned int i=0;
+	while ( (i<first.length()) && (i<second.length()) )
+	{
+		if (tolower(first[i])<tolower(second[i])) return true;
+		else if (tolower(first[i])>tolower(second[i])) return false;
+		++i;
+	}
+	return ( first.length() < second.length() );
+}
+
 void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
-	std::cout << "  > MODIFYERS" << std::endl;
-	ft_outfile << "	> MODIFYERS" << std::endl;
-	stl_outfile << "	> MODIFYERS" << std::endl;
+	std::cout << "  > OPERATIONS" << std::endl;
+	ft_outfile << "	> OPERATIONS" << std::endl;
+	stl_outfile << "	> OPERATIONS" << std::endl;
 
 	{
 		stl_outfile << "[*] splice :" << std::endl;
@@ -603,7 +630,7 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 		stl_outfile << "mylist2 contains:";
 		for (it=mylist2.begin(); it!=mylist2.end(); ++it)
 			stl_outfile << ' ' << *it;
-		std::cout << std::endl;
+		stl_outfile << std::endl;
 	}
 	{
 		ft_outfile << "[*] splice :" << std::endl;
@@ -634,10 +661,200 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 		ft_outfile << "mylist2 contains:";
 		for (it=mylist2.begin(); it!=mylist2.end(); ++it)
 			ft_outfile << ' ' << *it;
-		std::cout << std::endl;
+		ft_outfile << std::endl;
 	}
 
 	std::cout << "[*] splice	:";
+	check();
+
+	{
+		std::list<int> mylist;
+		mylist.push_back(17);
+		mylist.push_back(89);
+		mylist.push_back(7);
+		mylist.push_back(14);
+
+		mylist.remove(89);
+		stl_outfile << "[*] remove :" << std::endl;
+		stl_outfile << "mylist contains:";
+		for (std::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+	{
+		ft::list<int> mylist;
+		mylist.push_back(17);
+		mylist.push_back(89);
+		mylist.push_back(7);
+		mylist.push_back(14);
+
+		mylist.remove(89);
+		ft_outfile << "[*] remove :" << std::endl;
+		ft_outfile << "mylist contains:";
+		for (ft::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+
+	std::cout << "[*] remove	:";
+	check();
+
+	{
+		ft::list<int> mylist(1, 15);
+		mylist.push_back(36);
+		mylist.push_back(7);
+		mylist.push_back(17);
+		mylist.push_back(20);
+		mylist.push_back(39);
+		mylist.push_back(4);
+		mylist.push_back(1);
+
+		mylist.remove_if(single_digit);
+		mylist.remove_if(is_odd());
+		ft_outfile << "[*] remove_if :" << std::endl;
+		ft_outfile << "mylist contains:";
+		for (ft::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+	{
+		std::list<int> mylist(1, 15);
+		mylist.push_back(36);
+		mylist.push_back(7);
+		mylist.push_back(17);
+		mylist.push_back(20);
+		mylist.push_back(39);
+		mylist.push_back(4);
+		mylist.push_back(1);
+
+		mylist.remove_if(single_digit);
+		mylist.remove_if(is_odd());
+		stl_outfile << "[*] remove_if :" << std::endl;
+		stl_outfile << "mylist contains:";
+		for (std::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+
+	std::cout << "[*] remove_if	:";
+	check();
+
+	{
+		std::list<double> mylist;
+		mylist.push_back(12.15);
+		mylist.push_back(2.72);
+		mylist.push_back(73.0);
+		mylist.push_back(12.77);
+		mylist.push_back(3.14);
+		mylist.push_back(12.77);
+		mylist.push_back(73.35);
+		mylist.push_back(72.25);
+		mylist.push_back(15.3);
+		mylist.push_back(72.25);
+		mylist.sort();
+		mylist.unique();
+		mylist.unique (same_integral_part);
+		mylist.unique (is_near());
+		stl_outfile << "[*] unique :" << std::endl;
+		stl_outfile << "mylist contains:";
+		for (std::list<double>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+	{
+		ft::list<double> mylist;
+		mylist.push_back(12.15);
+		mylist.push_back(2.72);
+		mylist.push_back(73.0);
+		mylist.push_back(12.77);
+		mylist.push_back(3.14);
+		mylist.push_back(12.77);
+		mylist.push_back(73.35);
+		mylist.push_back(72.25);
+		mylist.push_back(15.3);
+		mylist.push_back(72.25);
+		mylist.sort();
+		mylist.unique();
+		mylist.unique (same_integral_part);
+		mylist.unique (is_near());
+		ft_outfile << "[*] unique :" << std::endl;
+		ft_outfile << "mylist contains:";
+		for (ft::list<double>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+
+	std::cout << "[*] unique	:";
+	check();
+
+	{
+		std::list<std::string> mylist;
+		std::list<std::string>::iterator it;
+		mylist.push_back ("one");
+		mylist.push_back ("two");
+		mylist.push_back ("Three");
+
+		mylist.sort();
+		stl_outfile << "[*] sort :" << std::endl;
+		stl_outfile << "mylist contains:";
+		for (it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+
+		mylist.sort(compare_nocase);
+
+		stl_outfile << "mylist contains:";
+		for (it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+	{
+		ft::list<std::string> mylist;
+		ft::list<std::string>::iterator it;
+		mylist.push_back ("one");
+		mylist.push_back ("two");
+		mylist.push_back ("Three");
+
+		mylist.sort();
+		ft_outfile << "[*] sort :" << std::endl;
+		ft_outfile << "mylist contains:";
+		for (it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+
+		mylist.sort(compare_nocase);
+
+		ft_outfile << "mylist contains:";
+		for (it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+
+	std::cout << "[*] sort	:";
+	check();
+
+	{
+		std::list<int> mylist;
+		for (int i=1; i<10; ++i) mylist.push_back(i);
+		mylist.reverse();
+		stl_outfile << "[*] reverse :" << std::endl;
+		stl_outfile << "mylist contains:";
+		for (std::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+	{
+		ft::list<int> mylist;
+		for (int i=1; i<10; ++i) mylist.push_back(i);
+		mylist.reverse();
+		ft_outfile << "[*] reverse :" << std::endl;
+		ft_outfile << "mylist contains:";
+		for (ft::list<int>::iterator it=mylist.begin(); it!=mylist.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+
+	std::cout << "[*] reverse	:";
 	check();
 
 

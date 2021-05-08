@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 11:36:07 by user42            #+#    #+#             */
-/*   Updated: 2021/05/07 19:22:42 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/08 17:21:37 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,47 @@ ft::Node<T> *							ft::list<T,A>::iterator_node(iterator position)
 	return (pos_node);
 }
 
+template < typename T, class A >
+void									ft::list<T,A>::extract_from_list(list & x, Node * src_first, Node * src_last)
+{
+	if (x.empty())
+	{
+		delete src_first->prev();
+		delete src_last->next();
+		x._first = 0;
+	}
+	else
+	{
+		src_first->prev()->setNext(src_last->next());
+		src_last->next()->setPrev(src_first->prev());
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::integrate_elements(list & x, Node * pos_node, Node * src_first, Node * src_last)
+{
+	if (!x.empty())
+	{
+		pos_node->prev()->setNext(src_first);
+		src_first->setPrev(pos_node->prev());
+		pos_node->setPrev(src_last);
+		src_last->setNext(pos_node);
+	}
+	else
+	{
+		x._first = src_first;
+		x.add_before_beginning();
+		x.add_past_the_end(src_last);
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::swap(Node * x, Node * y)
+{
+	value_type tmp = x->data();
+	x->data() = y->data();
+	y->data() = tmp;
+}
 
 
 /*
@@ -567,7 +608,268 @@ void									ft::list<T,A>::clear(void)
 ** ------ OPERATION FUNCTIONS ------
 */
 template < typename T, class A >
-void									ft::list<T,A>::splice(iterator position, list & x)		// OK
+void									ft::list<T,A>::splice(iterator position, list & x)
+{
+	if (x.empty())
+		return ;
+	size_type range = x._size;
+	Node * pos_node = iterator_node(position);
+	Node * src_first = x._first;
+	Node * src_last = x.iterator_node(--x.end());
+
+	x._size = 0;
+	extract_from_list(x, src_first, src_last);
+
+	if (position == this->begin())
+		this->_first = src_first;
+
+	integrate_elements(*this, pos_node, src_first, src_last);
+
+	this->_size += range;
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::splice(iterator position, list & x, iterator i)
+{
+	if (x.empty())
+		return ;
+
+	Node * pos_node = iterator_node(position);
+	Node * i_node = x.iterator_node(i);
+
+	x._size--;
+	extract_from_list(x, i_node, i_node);
+
+	if (i == x.begin())
+		x._first = i_node->next();
+	if (!this->empty() && position == this->begin())
+		this->_first = i_node;
+
+	integrate_elements(*this, pos_node, i_node, i_node);
+	
+	this->_size++;
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::splice(iterator position, list & x, iterator first, iterator last)
+{
+	if (x.empty())
+		return ;
+
+	size_type range(0);
+	for (iterator tmp_it = first; tmp_it != last; tmp_it++)
+		range++;
+
+	Node * pos_node = iterator_node(position);
+	Node * src_first = x.iterator_node(first);
+	Node * src_last = x.iterator_node(--last);
+
+	x._size -= range;
+	extract_from_list(x, src_first, src_last);
+
+	if (first == x.begin())
+		x._first = src_last->next();	
+	if (!this->empty() && position == this->begin())
+		this->_first = src_first;
+	
+	integrate_elements(*this, pos_node, src_first, src_last);
+
+	this->_size += range;
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::remove(value_type const & val)
+{
+	if (this->empty())
+		return ;
+	Node * tmp = this->_first;
+	while (!this->empty() && tmp && tmp->next())
+	{
+		Node * save = tmp->next();
+		if (tmp->data() == val)
+			erase(tmp);
+		tmp = save;
+	}
+}
+
+template < typename T, class A >
+template < class Predicate >
+void									ft::list<T,A>::remove_if(Predicate pred)
+{
+		if (this->empty())
+		return ;
+	Node * tmp = this->_first;
+	while (!this->empty() && tmp && tmp->next())
+	{
+		Node * save = tmp->next();
+		if (pred(tmp->data()))
+			erase(tmp);
+		tmp = save;
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::unique(void)
+{
+	if (this->empty() || this->_size == 1)
+		return ;
+	Node * tmp = this->_first->next();
+	while (tmp->next())
+	{
+		Node * save = tmp->next();
+		if (tmp->data() == tmp->prev()->data())
+			erase(tmp);
+		tmp = save;
+	}
+}
+
+template < typename T, class A >
+template < class BinaryPredicate >
+void									ft::list<T,A>::unique(BinaryPredicate binary_pred)
+{
+	if (this->empty() || this->_size == 1)
+		return ;
+	Node * tmp = this->_first->next();
+	while (tmp->next())
+	{
+		Node * save = tmp->next();
+		if (binary_pred(tmp->data(), tmp->prev()->data()))
+			erase(tmp);
+		tmp = save;
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::sort(void)
+{
+	if (this->empty() || this->_size == 1)
+		return ;
+	int swapped(1);
+	Node * ptr1;
+
+	while (swapped)
+	{
+		swapped = 0;
+		ptr1 = this->_first;
+		while (ptr1->next()->next() != 0)
+		{
+			if (ptr1->data() > ptr1->next()->data())
+			{
+				swap(ptr1, ptr1->next());
+				swapped = 1;
+			}
+			ptr1 = ptr1->next();
+		}
+	}
+}
+
+template < typename T, class A >
+template < class Compare >
+void									ft::list<T,A>::sort(Compare compare)
+{
+	if (this->empty() || this->_size == 1)
+		return ;
+	int swapped(1);
+	Node * ptr1;
+
+	while (swapped)
+	{
+		swapped = 0;
+		ptr1 = this->_first;
+		while (ptr1->next()->next() != 0)
+		{
+			if (compare(ptr1->next()->data(), ptr1->data()))
+			{
+				swap(ptr1, ptr1->next());
+				swapped = 1;
+			}
+			ptr1 = ptr1->next();
+		}
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::reverse(void)
+{
+	if (this->empty() || this->_size <= 1)
+		return ;
+	size_type i		= 0;
+	Node * first	= this->_first;
+	Node * last		= iterator_node(--this->end());
+
+	while (i < this->_size / 2)
+	{
+		swap(first, last);
+		first = first->next();
+		last = last->prev();
+		i++;
+	}
+}
+
+template < typename T, class A >
+void									ft::list<T,A>::merge(list & x)
+{
+	Node * dest_pos;
+	Node * src_pos	= x._first;
+
+	while (!x.empty())
+	{
+		
+		dest_pos = this->_first;
+		while (dest_pos->next() && dest_pos->data() < src_pos->data())
+			dest_pos = dest_pos->next();
+		this->splice(dest_pos, x, src_pos);
+		src_pos = x._first;
+	}
+}
+
+template < typename T, class A >
+template < class Compare >
+void									ft::list<T,A>::merge(list & x, Compare comp)
+{
+	Node * dest_pos;
+	Node * src_pos	= x._first;
+
+	while (!x.empty())
+	{
+		dest_pos = this->iterator_node(--this->end());
+		while (dest_pos->prev() && comp(src_pos->data(), dest_pos->prev()->data()))
+			dest_pos = dest_pos->prev();
+		this->splice(dest_pos, x, src_pos);
+	//	if (!x.empty())
+		src_pos = x._first;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* PREVIOUS VERSIONS OF SPLICE FUNCTIONS
+
+
+template < typename T, class A >
+void									ft::list<T,A>::splice(iterator position, list & x)
 {
 	if (x.empty())
 		return ;
@@ -602,10 +904,10 @@ void									ft::list<T,A>::splice(iterator position, list & x)		// OK
 }
 
 template < typename T, class A >
-void									ft::list<T,A>::splice(iterator position, list & x, iterator i)		// Handle case where we empty src list		CHECK
-{																											// Handle case where i is src->_first		CHECK
-	if (x.empty())																							// Handle case where position is src->first	CHECK
-		return ;																							// OK
+void									ft::list<T,A>::splice(iterator position, list & x, iterator i)
+{
+	if (x.empty())
+		return ;
 
 	Node * pos_node = iterator_node(position);
 	Node * i_node = x.iterator_node(i);
@@ -692,3 +994,7 @@ void									ft::list<T,A>::splice(iterator position, list & x, iterator first, 
 	this->_size += range;
 
 }
+
+
+
+*/
