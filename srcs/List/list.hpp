@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 10:51:01 by user42            #+#    #+#             */
-/*   Updated: 2021/05/08 16:58:34 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/11 15:49:50 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,21 @@ class	list
 		void					merge(list & x, Compare comp);
 
 
+		/* DECLARATION OF FRIEND FUNCTIONS (NON-MEMBER FUNCTIONS OVERLOADS) */
+		template < typename T2, class A2 >
+		friend bool				operator==(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+		template < typename T2, class A2 >
+		friend bool				operator!=(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+		template < typename T2, class A2 >
+		friend bool				operator<(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+		template < typename T2, class A2 >
+		friend bool				operator>(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+		template < typename T2, class A2 >
+		friend bool				operator<=(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+		template < typename T2, class A2 >
+		friend bool				operator>=(list<T2,A2> const & lhs, list<T2,A2> const & rhs);
+
+
 	private:
 		/* CONTAINER ATTRIBUTES */
 		Node *		_first;
@@ -123,13 +138,13 @@ class	list
 		void			add_before_beginning(void);
 		void			add_past_the_end(Node * last_element);
 		Node *			iterator_node(iterator position);
-
 		static void		extract_from_list(list & x, Node * src_first, Node * src_last);
 		static void		integrate_elements(list & x, Node * pos_node, Node * src_first, Node * src_last);
-
 		static void		swap(Node * x, Node * y);
 
 };
+
+#include "non_member_overloads.ipp"
 
 }
 
@@ -188,15 +203,15 @@ class	list
 
  ---> Non-member functions overload
 	---> Relational operators
-		> Operator ==					
-		> Operator !=					
-		> Operator >					
-		> Operator <					
-		> Operator >=					
-		> Operator <=					
+		> Operator ==						OK
+		> Operator !=						OK
+		> Operator >						OK
+		> Operator <						OK
+		> Operator >=						OK
+		> Operator <=						OK
 	
 	---> Other
-		> swap							
+		> swap								OK
 
 
 === REMARQUES ===

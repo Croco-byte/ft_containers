@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   iterator.hpp                                       :+:      :+:    :+:   */
+/*   map_iterator.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/05/05 12:54:17 by user42            #+#    #+#             */
-/*   Updated: 2021/05/11 15:38:43 by user42           ###   ########.fr       */
+/*   Created: 2021/05/11 15:02:42 by user42            #+#    #+#             */
+/*   Updated: 2021/05/11 15:42:21 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BIDIRECTIONAL_HPP
-# define BIDIRECTIONAL_HPP
+#ifndef MAP_ITERATOR_HPP
+# define MAP_ITERATOR_HPP
 
-class iterator
+class	iterator
 {
-	public:
-		typedef typename A::difference_type		difference_type;
-		typedef typename A::value_type			value_type;
-		typedef typename A::pointer				pointer;
-		typedef typename A::reference			reference;
-		typedef ft::bidirectional_iterator_tag	iterator_category;
+		public:
+		typedef typename allocator_type::difference_type		difference_type;
+		typedef typename allocator_type::value_type				value_type;
+		typedef typename allocator_type::pointer				pointer;
+		typedef typename allocator_type::reference				reference;
+		typedef ft::bidirectional_iterator_tag					iterator_category;
 	
 		iterator(): _ptr(0) {}
 		iterator(Node * ptr): _ptr(ptr) {}
@@ -31,19 +31,17 @@ class iterator
 		bool			operator==(iterator const & rhs)		const	{ return (this->_ptr == rhs._ptr); }
 		bool			operator!=(iterator const & rhs)		const	{ return (this->_ptr != rhs._ptr); }
 		
-		iterator &		operator++(void)								{ if (this->_ptr) this->_ptr = this->_ptr->next(); return (*this); }
+		iterator &		operator++(void)								{ if (this->_ptr) this->_ptr = next(this->_ptr); return (*this); }
 		iterator 		operator++(int)									{ iterator result(*this); this->operator++(); return (result); }
-		iterator &		operator--(void)								{ if (this->_ptr) this->_ptr = this->_ptr->prev(); return (*this); }
+		iterator &		operator--(void)								{ if (this->_ptr) this->_ptr = prev(this->_ptr); return (*this); }
 		iterator		operator--(int)									{ iterator result(*this); this->operator--(); return (result); }
 
-		reference		operator*(void)							const	{ return (_ptr->data()); }
-		pointer			operator->(void)						const	{ return &(_ptr->data()); }
+		reference		operator*(void)							const	{ return (_ptr->data); }
+		pointer			operator->(void)						const	{ return &(_ptr->data); }
 
 	private:
 		Node *	_ptr;
 
 };
-
-
 
 #endif

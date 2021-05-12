@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 11:18:35 by user42            #+#    #+#             */
-/*   Updated: 2021/05/06 12:33:57 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/09 11:11:57 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,9 +386,6 @@ void								ft::vector<T,A>::swap(vector & x)
 	x._max_size = tmpMax;
 	x._capacity = tmpCapacity;
 }
-
-
-
 
 template < typename T, class A >
 void			ft::vector<T,A>::clear(void)

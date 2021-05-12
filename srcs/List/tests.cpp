@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 12:40:15 by user42            #+#    #+#             */
-/*   Updated: 2021/05/08 16:06:55 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/09 11:28:27 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -595,6 +595,9 @@ bool compare_nocase (const std::string& first, const std::string& second)
 	return ( first.length() < second.length() );
 }
 
+bool mycomparison (double first, double second)
+{ return ( int(first)<int(second) ); }
+
 void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > OPERATIONS" << std::endl;
@@ -857,12 +860,127 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	std::cout << "[*] reverse	:";
 	check();
 
+	{
+		std::list<double> first, second;
+
+		first.push_back (3.1);
+		first.push_back (2.2);
+		first.push_back (2.9);
+
+		second.push_back (3.7);
+		second.push_back (7.1);
+		second.push_back (1.4);
+
+		first.sort();
+		second.sort();
+
+		first.merge(second);
+
+		second.push_back (2.1);
+
+		first.merge(second,mycomparison);
+		stl_outfile << "[*] merge :" << std::endl;
+		stl_outfile << "first contains:";
+		for (std::list<double>::iterator it=first.begin(); it!=first.end(); ++it)
+			stl_outfile << ' ' << *it;
+		stl_outfile << std::endl;
+	}
+	{
+		ft::list<double> first, second;
+
+		first.push_back (3.1);
+		first.push_back (2.2);
+		first.push_back (2.9);
+
+		second.push_back (3.7);
+		second.push_back (7.1);
+		second.push_back (1.4);
+
+		first.sort();
+		second.sort();
+
+		first.merge(second);
+
+		second.push_back (2.1);
+
+		first.merge(second,mycomparison);
+		ft_outfile << "[*] merge :" << std::endl;
+		ft_outfile << "first contains:";
+		for (ft::list<double>::iterator it=first.begin(); it!=first.end(); ++it)
+			ft_outfile << ' ' << *it;
+		ft_outfile << std::endl;
+	}
+
+	std::cout << "[*] merge	:";
+	check();
 
 	std::cout << std::endl;
 	ft_outfile << std::endl;
 	stl_outfile << std::endl;
 }
 
+void	non_member_overloads(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+{
+	std::cout << "  > NON-MEMBER OVERLOADS" << std::endl;
+	ft_outfile << "	> NON-MEMBER OVERLOADS" << std::endl;
+	stl_outfile << "	> NON-MEMBER OVERLOADS" << std::endl;
+
+	{
+		std::list<int> a;
+		a.push_back(10);
+		a.push_back(20);
+		a.push_back(30);
+		std::list<int> b;
+		b.push_back(10);
+		b.push_back(20);
+		b.push_back(30);
+		std::list<int> c;
+		c.push_back(30);
+		c.push_back(20);
+		c.push_back(10);
+		stl_outfile << "[*] Non-member overloads :" << std::endl;
+		if (a==b) stl_outfile << "a and b are equal\n";
+		if (b!=c) stl_outfile << "b and c are not equal\n";
+		if (b<c) stl_outfile << "b is less than c\n";
+		if (c>b) stl_outfile << "c is greater than b\n";
+		if (a<=b) stl_outfile << "a is less than or equal to b\n";
+		if (a>=b) stl_outfile << "a is greater than or equal to b\n";
+	}
+	{
+		ft::list<int> a;
+		a.push_back(10);
+		a.push_back(20);
+		a.push_back(30);
+		ft::list<int> b;
+		b.push_back(10);
+		b.push_back(20);
+		b.push_back(30);
+		ft::list<int> c;
+		c.push_back(30);
+		c.push_back(20);
+		c.push_back(10);
+		ft_outfile << "[*] Non-member overloads :" << std::endl;
+		if (a==b) ft_outfile << "a and b are equal\n";
+		if (b!=c) ft_outfile << "b and c are not equal\n";
+		if (b<c) ft_outfile << "b is less than c\n";
+		if (c>b) ft_outfile << "c is greater than b\n";
+		if (a<=b) ft_outfile << "a is less than or equal to b\n";
+		if (a>=b) ft_outfile << "a is greater than or equal to b\n";
+	}
+
+	std::cout << "[*] Operator==	:";
+	check();
+	std::cout << "[*] Operator!=	:";
+	check();
+	std::cout << "[*] Operator<	:";
+	check();
+	std::cout << "[*] Operator<=	:";
+	check();
+	std::cout << "[*] Operator>	:";
+	check();
+	std::cout << "[*] Operator>=	:";
+	check();
+}
 
 
 void	list_tests(void)
@@ -878,6 +996,7 @@ void	list_tests(void)
 	element_access_tests(ft_outfile, stl_outfile);
 	modifyers_tests(ft_outfile, stl_outfile);
 	operations_tests(ft_outfile, stl_outfile);
+	non_member_overloads(ft_outfile, stl_outfile);
 
 
 	ft_outfile.close();

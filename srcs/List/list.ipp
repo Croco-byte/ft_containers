@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 11:36:07 by user42            #+#    #+#             */
-/*   Updated: 2021/05/08 17:21:37 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/09 12:27:26 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -836,7 +836,6 @@ void									ft::list<T,A>::merge(list & x, Compare comp)
 		while (dest_pos->prev() && comp(src_pos->data(), dest_pos->prev()->data()))
 			dest_pos = dest_pos->prev();
 		this->splice(dest_pos, x, src_pos);
-	//	if (!x.empty())
 		src_pos = x._first;
 	}
 }
