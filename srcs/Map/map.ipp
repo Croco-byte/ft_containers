@@ -3,20 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   map.ipp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: qroland <qroland@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:31:25 by user42            #+#    #+#             */
-/*   Updated: 2021/05/11 19:20:37 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/12 16:40:19 by qroland          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "map.hpp"
 
 /*
-** PRIVATE HELPER FUNCTIONS
+** ----- PRIVATE HELPER FUNCTIONS -----
 */
 template < class K, class T, class C, class A >
-void				ft::map<K,T,C,A>::recursive_postorder_deletion(Node * root)
+void											ft::map<K,T,C,A>::setPastTheEnd(Node * last)
+{
+	Node * past_end = new Node;
+	last->right = past_end;
+	past_end->parent = last;
+}
+
+template < class K, class T, class C, class A >
+void											ft::map<K,T,C,A>::setBeforeBeginning(Node * first)
+{
+	Node * before_beg = new Node;
+	first->left = before_beg;
+	before_beg->parent = first;
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::keyInTree(key_type const & k)
+{
+	Node * iter = leftmost(this->_root)->parent;
+	Node * past_end = rightmost(this->_root);
+	while (iter != past_end)
+	{
+		if (iter->data.first == k)
+			return (iter);
+		iter = next(iter);
+	}
+	return (0);
+}
+
+template < class K, class T, class C, class A >
+void											ft::map<K,T,C,A>::recursive_postorder_deletion(Node * root)
 {
 	if (root == 0)
 	return ;
@@ -26,9 +56,32 @@ void				ft::map<K,T,C,A>::recursive_postorder_deletion(Node * root)
 	delete root;
 }
 
+template < class K, class T, class C, class A >
+void											ft::map<K,T,C,A>::recursive_copy(Node * root, Node * copyRoot)
+{
+	if (root == 0)
+		return ;
+	
+	if (root->left)
+	{
+		Node * newLeftNode = new Node(root->left->data);
+		copyRoot->left = newLeftNode;
+		newLeftNode->parent = copyRoot;
+		recursive_copy(root->left, copyRoot->left);
+	}
+
+	if (root->right)
+	{
+		Node * newRightNode = new Node(root->right->data);
+		copyRoot->right = newRightNode;
+		newRightNode->parent = copyRoot;
+		recursive_copy(root->right, copyRoot->right);
+	}
+}
+
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::leftmost(Node * node)
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::leftmost(Node * node)
 {
 	if (!node)
 		return (0);
@@ -38,21 +91,17 @@ typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::leftmost(Node * node)
 }
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::next(Node * node)
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::next(Node * node)
 {
 	if (!node)
 		return (0);
-	
 	if (node->right != 0)					// Si l'on a des éléments supérieurs au node actuel, alors l'élément suivant sera le plus petit de ces éléments supérieurs (celui le plus à gauche)
 		return (leftmost(node->right));
-	
 	Node * parent = node->parent;
 	if (!parent)
 		return (0);
-	
 	if (node == parent->left)				// Si l'on se situe dans le left subtree, alors on est inférieur au parent, et à tous les nodes situés au dessus / à droite du parent. Notre élément suivant est donc le parent
 		return (parent);
-	
 	while (parent && node != parent->left)	// On se situe dans le right subtree. On remonte jusqu'à un noeud qui est un branche de gauche, et on retourne son parent.
 	{										// En effet, on est dans le right subtree et on est pas une branche de gauche. Tous les éléments du subtree actuel
 		node = parent;						// (y compris le root du subtree actuel) seront inférieurs à notre node. Pour trouver l'élément directement supérieur,
@@ -75,7 +124,7 @@ void		ft::map<K,T,C,A>::iterative_inorder_print(void) const
 }
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::rightmost(Node * node)
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::rightmost(Node * node)
 {
 	if (!node)
 		return (0);
@@ -85,21 +134,17 @@ typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::rightmost(Node * node)
 }
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::prev(Node * node)
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::prev(Node * node)
 {
 	if (!node)
 		return (0);
-	
 	if (node->left != 0)
 		return (rightmost(node->left));
-	
 	Node * parent = node->parent;
 	if (!parent)
 		return (0);
-	
 	if (node == parent->right)
 		return (parent);
-	
 	while (parent && node != parent->right)
 	{
 		node = parent;
@@ -109,7 +154,7 @@ typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::prev(Node * node)
 }
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::range_to_BST(InputIterator first, InputIterator last, int start, int end)
+typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::range_to_BST(InputIterator first, InputIterator last, int start, int end)
 {
 	if (start > end)
 		return (0);
@@ -121,15 +166,18 @@ typename ft::map<K,T,C,A>::Node *		ft::map<K,T,C,A>::range_to_BST(InputIterator 
 	
 	Node * root = new Node(*tmp);
 
+	if (root->left)
+		root->left->parent = root;
+	if (root->right)
+		root->right->parent = root;
 	root->left = range_to_BST(first, last, start, mid - 1);
 	root->right = range_to_BST(first, last, mid + 1, end);
 	return (root);
 }
 
 
-
 /*
-** CONSTRUCTORS / DESTRUCTORS
+** ----- CONSTRUCTORS / DESTRUCTORS -----
 */
 template < class K, class T, class C, class A >
 ft::map<K,T,C,A>::map(): _root(0), _size(0)
@@ -145,6 +193,22 @@ ft::map<K,T,C,A>::map(InputIterator first, InputIterator last)
 
 	this->_root = range_to_BST(first, last, 0, range - 1);
 	parents_preorder(this->_root);
+	this->setBeforeBeginning(leftmost(this->_root));
+	this->setPastTheEnd(rightmost(this->_root));
+}
+
+template < class K, class T, class C, class A >
+ft::map<K,T,C,A>::map(map const & src)
+{
+	this->_size = src._size;
+	if (src.empty())
+	{
+		this->_root = 0;
+		return ;
+	}
+	
+	this->_root = new Node(src._root->data);
+	recursive_copy(src._root, this->_root);
 }
 
 template < class K, class T, class C, class A >
@@ -153,37 +217,197 @@ ft::map<K,T,C,A>::~map()
 
 
 /*
-** ITERATOR FUNCTIONS
+** ----- OPERATOR OVERLOADS -----
 */
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::iterator			ft::map<K,T,C,A>::begin(void)
+ft::map<K,T,C,A> &						ft::map<K,T,C,A>::operator=(map const & rhs)
 {
-	iterator it(leftmost(this->_root));
+	recursive_postorder_deletion(this->_root);
+	this->_size = rhs._size;
+	if (rhs.empty())
+	{
+		this->_root = 0;
+		return (*this);
+	}
+	
+	this->_root = new Node(rhs._root->data);
+	recursive_copy(rhs._root, this->_root);
+	return (*this);
+}
+
+
+/*
+** ----- ITERATOR FUNCTIONS -----
+*/
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::iterator							ft::map<K,T,C,A>::begin(void)
+{
+	iterator it(leftmost(this->_root)->parent);
 	return (it);
 }
 
 template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::iterator			ft::map<K,T,C,A>::end(void)
+typename ft::map<K,T,C,A>::const_iterator					ft::map<K,T,C,A>::begin(void) const
 {
-	iterator it(0);
+	const_iterator it(leftmost(this->_root)->parent);
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::iterator							ft::map<K,T,C,A>::end(void)
+{
+	iterator it(rightmost(this->_root));
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::const_iterator					ft::map<K,T,C,A>::end(void) const
+{
+	const_iterator it(rightmost(this->_root));
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::reverse_iterator					ft::map<K,T,C,A>::rbegin(void)
+{
+	reverse_iterator it(this->end());
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::const_reverse_iterator			ft::map<K,T,C,A>::rbegin(void) const
+{
+	const_reverse_iterator it(this->end());
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::reverse_iterator					ft::map<K,T,C,A>::rend(void)
+{
+	reverse_iterator it(this->begin());
+	return (it);
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::const_reverse_iterator			ft::map<K,T,C,A>::rend(void) const
+{
+	const_reverse_iterator it(this->begin());
 	return (it);
 }
 
 
+/*
+** ----- CAPACITY FUNCTIONS -----
+*/
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::size_type						ft::map<K,T,C,A>::size(void) const
+{ return (this->_size); }
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::size_type		ft::map<K,T,C,A>::max_size(void) const
+{ return (std::numeric_limits<size_type>::max() / (sizeof(Node) + sizeof(pointer))); }
+
+template < class K, class T, class C, class A >
+bool														ft::map<K,T,C,A>::empty(void) const
+{ return (this->_size <= 0); }
 
 
 
 
 
+/*
+** ----- MODIFYERS -----
+*/
+template < class K, class T, class C, class A >
+ft::Pair<typename ft::map<K,T,C,A>::iterator,bool>				ft::map<K,T,C,A>::insert(value_type const & val)
+{
+	ft::Pair<iterator,bool> result;
 
+	if (this->empty())
+	{
+		this->_size++;
+		insert_from_empty(result, val);
+		return (result);
+	}
 
+	Node * pos = this->keyInTree(val.first);
+ 	if (pos)
+	{
+		result.first = pos;
+		result.second = false;
+	}
+	else
+	{
+		this->_size++;
+		Node * biggest = rightmost(this->_root)->parent;
+		Node * smallest = leftmost(this->_root)->parent;
+		if (val.first < smallest->data.first)
+			insert_smallest(smallest, val);
+		else if (val.first > biggest->data.first)
+			insert_biggest(biggest, val);
+		else
+			recursive_insert(this->_root, val);
+		result.first = this->keyInTree(val.first);
+		result.second = true;
+	}
+	return(result);
+}
 
+template < class K, class T, class C, class A >
+void										ft::map<K,T,C,A>::insert_from_empty(ft::Pair<iterator,bool> & result, value_type const & val)
+{
+	Node * new_node = new Node(val);
+	this->_root = new_node;
+	this->setBeforeBeginning(this->_root);
+	this->setPastTheEnd(this->_root);
 
+	result.first = this->_root;
+	result.second = true;
+}
 
+template < class K, class T, class C, class A >
+void										ft::map<K,T,C,A>::insert_smallest(Node * prec, value_type const & val)
+{
+	Node * new_node = new Node(val);
 
+	new_node->parent = prec;
+	new_node->left = prec->left;
+	prec->left->parent = new_node;
+	prec->left = new_node;
+}
 
+template < class K, class T, class C, class A >
+void										ft::map<K,T,C,A>::insert_biggest(Node * prec, value_type const & val)
+{
+	Node * new_node = new Node(val);
 
+	new_node->parent = prec;
+	new_node->right = prec->right;
+	prec->right->parent = new_node;
+	prec->right = new_node;
+}
 
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::Node *			ft::map<K,T,C,A>::recursive_insert(Node * node, value_type const & val)
+{
+	if (!node)
+		return new Node(val);
+	
+	if (val.first > node->data.first)
+	{
+		node->right = recursive_insert(node->right, val);
+		if (node->right)
+			node->right->parent = node;
+	}
+	else
+	{
+		node->left = recursive_insert(node->left, val);
+		if (node->left)
+			node->left->parent = node;
+	}
+	return (node);
+}
 
 
 
@@ -224,6 +448,9 @@ ft::map<K,T,C,A>::map(key_type const & key, mapped_type const & value)
 
 	this->_root->right->right = new Node(key + 10, value);
 	this->_root->right->right->parent = this->_root->right;
+
+	this->setBeforeBeginning(leftmost(this->_root));
+	this->setPastTheEnd(rightmost(this->_root));
 
 	this->_size = 7;
 }
