@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qroland <qroland@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:31:04 by user42            #+#    #+#             */
-/*   Updated: 2021/05/12 16:37:48 by qroland          ###   ########.fr       */
+/*   Updated: 2021/05/13 16:51:10 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,19 @@ class	map
 		typedef ft::reverse_iterator< const_iterator >							const_reverse_iterator;
 		typedef typename ft::map< key_type,mapped_type >::iterator				InputIterator;
 
+		/* VALUE_COMP CLASS */
+		class value_compare
+		{
+			friend class map;
+			protected:
+				Compare comp;
+				value_compare (Compare c) : comp(c) {}
+			public:
+				typedef bool													result_type;
+				typedef value_type												first_argument_type;
+				typedef value_type												second_argument_type;
+				bool operator() (const value_type& x, const value_type& y) const { return comp(x.first, y.first); }
+		};
 
 		/* CONSTRUCTORS / DESTRUCTORS */
 		map();
@@ -59,31 +72,55 @@ class	map
 		~map();
 
 		/* OPERATOR OVERLOADS */
-		map &				operator=(map const & rhs);
+		map &					operator=(map const & rhs);
 
 
 		/* ITERATOR FUNCTIONS */
-		iterator				begin(void);
-		const_iterator			begin(void)										const;
-		iterator				end(void);
-		const_iterator			end(void)										const;
-		reverse_iterator		rbegin(void);
-		const_reverse_iterator	rbegin(void)									const;
-		reverse_iterator		rend(void);
-		const_reverse_iterator	rend(void)										const;
+		iterator									begin(void);
+		const_iterator								begin(void)										const;
+		iterator									end(void);
+		const_iterator								end(void)										const;
+		reverse_iterator							rbegin(void);
+		const_reverse_iterator						rbegin(void)									const;
+		reverse_iterator							rend(void);
+		const_reverse_iterator						rend(void)										const;
 
 		/* CAPACITY FUNCTIONS */
-		size_type				size(void)										const;
-		size_type				max_size(void)									const;
-		bool					empty(void)										const;
+		size_type									size(void)										const;
+		size_type									max_size(void)									const;
+		bool										empty(void)										const;
 
 		/* ELEMENT ACCESS */
-		mapped_type &			operator[](key_type const & k);
+		mapped_type &								operator[](key_type const & k);
 
 		/* MODIFYERS */
-		ft::Pair<iterator,bool>	insert(value_type const & val);
+		ft::Pair<iterator,bool>						insert(value_type const & val);
+		void										insert(InputIterator first, InputIterator last);
+		void										erase(iterator position);
+		size_type									erase(key_type const & k);
+		void										erase(iterator first, iterator last);
+		void										swap(map & x);
+		void										clear(void);
 
-		/* DEBUG / EXPERIMENTATION FUNCTIONS */
+		/* OBSERVERS */
+		key_compare									key_comp(void)									const;
+		value_compare								value_comp(void)								const;
+
+
+		/* OPERATIONS */
+		iterator									find(key_type const & k);
+		const_iterator								find(key_type const & k)						const;
+		size_type									count(key_type const & k)						const;
+		iterator									lower_bound(key_type const & k);
+		const_iterator								lower_bound(key_type const & k)					const;
+		iterator									upper_bound(key_type const & k);
+		const_iterator								upper_bound(key_type const & k)					const;
+		ft::Pair<iterator,iterator>					equal_range(key_type const & k);
+		ft::Pair<const_iterator,const_iterator>		equal_range(key_type const & k)					const;
+
+
+
+		/* DEBUG / EXPERIMENTATION FUNCTIONS
 		map(key_type const & key, mapped_type const & value);
 		static void				inorder(Node * root);					// Recursive
 		static void				postorder(Node * root);					// Recursive
@@ -94,6 +131,7 @@ class	map
 		void					printPreorder(void)								const;
 		void					iterative_inorder_print(void)					const;
 		void					rev_iterative_inorder_print(void)				const;
+		key_type				rootKey() { return this->_root->data.first; } */
 
 
 
@@ -103,9 +141,10 @@ class	map
 		size_type	_size;
 
 		/* PRIVATE HELPER FUNCTIONS */
+		Node *					iterator_node(iterator position);
 		void					setPastTheEnd(Node * last);
 		void					setBeforeBeginning(Node * last);
-		Node *					keyInTree(key_type const & k);
+		Node *					keyInTree(key_type const & k)					const;
 		static void				recursive_copy(Node * root, Node * copyRoot);											// Do a recursive copy from root node, to copyRoot tree.
 		static void				recursive_postorder_deletion(Node * root);												// Traverse tree in postorder to delete it
 		static Node *			leftmost(Node * node);																	// Find smallest element in tree
@@ -118,6 +157,8 @@ class	map
 		static void				insert_smallest(Node * prec, value_type const & val);
 		static void				insert_biggest(Node * prec, value_type const & val);
 		void					insert_from_empty(ft::Pair<iterator,bool> & result, value_type const & val);
+
+		void					delete_node(Node * pos_node);
 };
 
 }
@@ -132,18 +173,18 @@ class	map
 
  ---> Member functions
  	---> Constructors
-	 	> Default					OK				
-		> Range						OK		
-		> Copy						OK		
+	 	> Default					OK
+		> Range						OK
+		> Copy						OK
 	
 	---> Operators
 		> Operator=					OK
 
 	---> Iterators
 		> begin()					OK
-		> end()						OK		
-		> rbegin()					OK		
-		> rend()					OK		
+		> end()						OK
+		> rbegin()					OK
+		> rend()					OK
 	
 	---> Capacity
 		> size						OK
@@ -151,28 +192,29 @@ class	map
 		> empty						OK
 	
 	---> Element access
-		> Operator[]						
+		> Operator[]				OK
 	
 	---> Modifyers
-		> insert							
-		> erase								
-		> swap								
-		> clear								
+		> insert					OK
+		> erase						OK
+		> swap						OK
+		> clear						OK
 
 	---> Observers
-		> key_comp
-		> value_comp
+		> key_comp					OK
+		> value_comp				OK
 
 	---> Operations
-		> find
-		> count
-		> lower_bound
-		> upper_bound
-		> equal_range
+		> find						OK
+		> count						OK
+		> lower_bound				OK
+		> upper_bound				OK
+		> equal_range				OK
 
 
 === REMARQUES ===
 
 	---> Implémentation identique aux listes, l'élément past_the_end et before_beginning sont des éléments spécifiques. Si la map est vide, ils sont égaux à 0 et ne doivent pas être déréférencés.
 	---> Tenter de retirer la fonction rétablissant les parents après bst_to_range.
+	---> La fonction delete_node est très longue, mais elle gère bien l'intégralité des cas de suppresion de noeuds.
 */

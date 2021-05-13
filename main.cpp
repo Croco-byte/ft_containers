@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qroland <qroland@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/30 11:20:45 by user42            #+#    #+#             */
-/*   Updated: 2021/05/12 16:39:41 by qroland          ###   ########.fr       */
+/*   Updated: 2021/05/13 16:50:54 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	display(ft::map<T,T2> const & mymap)
 		std::cout << "<empty>" << std::endl;
 	else
 	{
-		for (ft::map<int,std::string>::const_iterator it = mymap.begin(); it != mymap.end(); it++)
+		for (typename ft::map<T,T2>::const_iterator it = mymap.begin(); it != mymap.end(); it++)
 			std::cout << '[' << it->first << "=>" << it->second << "]	";
 		std::cout << std::endl;
 	}
@@ -40,7 +40,7 @@ void	rev_display(ft::map<T,T2> const & mymap)
 		std::cout << "<empty>" << std::endl;
 	else
 	{
-		for (ft::map<int,std::string>::const_reverse_iterator it = mymap.rbegin(); it != mymap.rend(); it++)
+		for (typename ft::map<T,T2>::const_reverse_iterator it = mymap.rbegin(); it != mymap.rend(); it++)
 			std::cout << '[' << it->first << "=>" << it->second << "]	";
 		std::cout << std::endl;
 	}
@@ -49,21 +49,20 @@ void	rev_display(ft::map<T,T2> const & mymap)
 
 int		main(void)
 {
-	ft::map<int,std::string> mymap;
+	    ft::map<char,int> mymap;
 
-	mymap.insert(ft::Pair<int,std::string>(7,"bruh"));
-	mymap.insert(ft::Pair<int,std::string>(14,"bjour"));
-	mymap.insert(ft::Pair<int,std::string>(2,"hello there"));
-	mymap.insert(ft::Pair<int,std::string>(40,"general kenobi!"));
+  mymap['a']=10;
+  mymap['b']=20;
+  mymap['e']=30;
 
+  ft::Pair<ft::map<char,int>::iterator,ft::map<char,int>::iterator> ret;
+  ret = mymap.equal_range('c');
 
-	display(mymap);
+  std::cout << "lower bound points to: ";
+  std::cout << ret.first->first << " => " << ret.first->second << '\n';
 
-
-	
-
-
-
+  std::cout << "upper bound points to: ";
+  std::cout << ret.second->first << " => " << ret.second->second << '\n';
 
 	return (0);
 }
