@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   const_iterator.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qroland <qroland@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 19:02:02 by user42            #+#    #+#             */
-/*   Updated: 2021/05/12 13:58:18 by qroland          ###   ########.fr       */
+/*   Updated: 2021/05/14 10:55:51 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ class const_iterator
 		const_iterator &		operator--(void)									{ this->_ptr = this->_ptr->prev(); return (*this); }
 		const_iterator			operator--(int)										{ const_iterator result(*this); this->operator--(); return (result); }
 
-		reference		operator*(void)												const	{ return (_ptr->data()); }
-		pointer			operator->(void)											const	{ return (&(_ptr->data())); }
+		reference				operator*(void)										const	{ return (_ptr->data()); }
+		pointer					operator->(void)									const	{ return (&(_ptr->data())); }
 };
 
 #endif

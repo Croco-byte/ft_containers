@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/04 13:04:11 by user42            #+#    #+#             */
-/*   Updated: 2021/05/06 12:28:55 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 15:56:14 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,55 @@ void	write_ft_vector(std::ofstream & ft_outfile, ft::vector<T> const & vec, std:
 	ft_outfile << std::endl;
 }
 
-void	check(void)
+static void	check(void)
 {
-	if (!(system("diff test_results/ft_vector.out test_results/stl_vector.out")))
-		std::cout << GREEN << "			OK" << NC << std::endl;
-	else
+	std::ifstream ft,stl;
+	ft.open("test_results/ft_vector.out");
+	stl.open("test_results/stl_vector.out");
+
+	/* Compare number of lines */
+	int cft(0),cstl(0);
+	std::string str;
+	while (!ft.eof())
+	{
+		getline(ft,str);
+		cft++;
+	}
+	ft.clear();
+	ft.seekg(0,std::ios::beg);
+	while (!stl.eof())
+	{
+		getline(stl,str);
+		cstl++;
+	}
+	stl.clear();
+	stl.seekg(0,std::ios::beg);
+	if (cft != cstl)
 	{
 		std::cout << RED << "			KO" << NC << std::endl;
 		exit(1);
 	}
+
+	/* Compare files line by line */
+	std::string ftstr;
+	std::string stlstr;
+	
+	while (!ft.eof())
+	{
+		getline(ft,ftstr);
+		getline(stl,stlstr);
+		if (ftstr != stlstr)
+		{
+			std::cout << RED << "			KO" << NC << std::endl;
+			exit(1);
+		}
+	}
+	std::cout << GREEN << "			OK" << NC << std::endl;
 }
 
 
 
-void	constructor_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	constructor_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > CONSTRUCTOR" << std::endl;
 	ft_outfile << "	> CONSTRUCTOR" << std::endl;
@@ -79,26 +114,36 @@ void	constructor_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	std::cout << "[*] Default	:";
 	write_ft_vector(ft_outfile, ft_first, "[*] Default	:");
 	write_stl_vector(stl_outfile, stl_first, "[*] Default	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Fill	:";
 	write_ft_vector(ft_outfile, ft_second, "[*] Fill	:");
 	write_stl_vector(stl_outfile, stl_second, "[*] Fill	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Range	:";
 	write_ft_vector(ft_outfile, ft_third, "[*] Range	:");
 	write_stl_vector(stl_outfile, stl_third, "[*] Range	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Copy	:";
 	write_ft_vector(ft_outfile, ft_fourth, "[*] Copy	:");
 	write_stl_vector(stl_outfile, stl_fourth, "[*] Copy	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Array	:";
 	write_ft_vector(ft_outfile, ft_fifth, "[*] Array	:");
 	write_stl_vector(stl_outfile, stl_fifth, "[*] Array	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -106,7 +151,7 @@ void	constructor_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 }
 
-void member_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void member_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > MEMBER OPERATORS" << std::endl;
 	ft_outfile << "	> MEMBER OPERATORS" << std::endl;
@@ -137,6 +182,8 @@ void member_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outf
 	std::cout << "[*] Operator[]	:";
 	write_ft_vector(ft_outfile, ft_first, "[*] Operator[]	:");
 	write_stl_vector(stl_outfile, stl_first, "[*] Operator[]	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_foo (3,0);
@@ -152,6 +199,8 @@ void member_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outf
 	std::cout << "[*] Operator=	:";
 	write_ft_vector(ft_outfile, ft_bar, "[*] Operator=	:");
 	write_stl_vector(stl_outfile, stl_bar, "[*] Operator=	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -159,7 +208,7 @@ void member_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outf
 	stl_outfile << std::endl;
 }
 
-void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > ITERATOR FUNCTIONS" << std::endl;
 	ft_outfile << "	> ITERATOR FUNCTIONS" << std::endl;
@@ -173,11 +222,15 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	std::cout << "[*] begin	:";
 	write_ft_vector(ft_outfile, ft_first, "[*] begin	:");
 	write_stl_vector(stl_outfile, stl_first, "[*] begin	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*]  end	:";
 	write_ft_vector(ft_outfile, ft_first, "[*]  end	:");
 	write_stl_vector(stl_outfile, stl_first, "[*]  end	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] rbegin	:";
@@ -189,6 +242,8 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	for(ft::vector<std::string>::reverse_iterator rev_it = ft_first.rbegin(); rev_it != ft_first.rend(); rev_it++)
 		ft_outfile << ' ' << *rev_it;
 	ft_outfile << std::endl;
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] rend	:";
@@ -200,6 +255,8 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	for(ft::vector<std::string>::reverse_iterator rev_it = ft_first.rbegin(); rev_it != ft_first.rend(); rev_it++)
 		ft_outfile << ' ' << *rev_it;
 	ft_outfile << std::endl;
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -207,7 +264,7 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 }
 
-void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > CAPACITY FUNCTIONS" << std::endl;
 	ft_outfile << "	> CAPACITY FUNCTIONS" << std::endl;
@@ -234,6 +291,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "3. size: " << myints2.size() << '\n';
 
 	std::cout << "[*] size	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> myvector;
@@ -251,8 +310,12 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "max_size: " << myvector2.max_size() << "\n";
 	
 	std::cout << "[*] capacity	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] max_size	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_first;
@@ -270,6 +333,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	std::cout << "[*] resize	:";
 	write_ft_vector(ft_outfile, ft_first, "[*] resize	:");
 	write_stl_vector(stl_outfile, stl_first, "[*] resize	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_second;
@@ -293,6 +358,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "[*] empty	:" << std::endl << sum << std::endl;
 
 	std::cout << "[*] empty	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_third(5, 42);
@@ -308,6 +375,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "After reserve, capacity is : " << ft_third.capacity() << std::endl;
 
 	std::cout << "[*] reserve	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -316,7 +385,7 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 }
 
 
-void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > ELEMENT ACCESS FUNCTIONS" << std::endl;
 	ft_outfile << "	> ELEMENT ACCESS FUNCTIONS" << std::endl;
@@ -332,6 +401,8 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	std::cout << "[*]   at	:";
 	write_ft_vector(ft_outfile, ft_first, "[*]   at	:");
 	write_stl_vector(stl_outfile, stl_first, "[*]   at	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_second;
@@ -349,6 +420,8 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	ft_outfile << "myvector.front() is now " << ft_second.front() << '\n';
 
 	std::cout << "[*] front	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	stl_outfile << "[*] back	:" << std::endl;
@@ -357,6 +430,8 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	ft_outfile << "myvector.back() is now " << ft_second.back() << '\n';
 
 	std::cout << "[*] back	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -364,7 +439,7 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	stl_outfile << std::endl;
 }
 
-void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > MODIFYER FUNCTIONS" << std::endl;
 	ft_outfile << "	> MODIFYER FUNCTIONS" << std::endl;
@@ -387,6 +462,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	write_ft_vector(ft_outfile, ft_second, "");
 	write_stl_vector(stl_outfile, stl_first, "[*] assign	:");
 	write_stl_vector(stl_outfile, stl_second, "");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<std::string> stl_third;
@@ -400,6 +477,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] push_back	:";
 	write_ft_vector(ft_outfile, ft_third, "[*] push_back	:");
 	write_stl_vector(stl_outfile, stl_third, "[*] push_back	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	stl_third.pop_back();
@@ -407,6 +486,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] pop_back	:";
 	write_ft_vector(ft_outfile, ft_third, "[*] pop_back	:");
 	write_stl_vector(stl_outfile, stl_third, "[*] pop_back	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 
@@ -435,6 +516,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] insert	:";
 	write_ft_vector(ft_outfile, ft_fourth, "[*] insert	:");
 	write_stl_vector(stl_outfile, stl_fourth, "[*] insert	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_six;
@@ -450,6 +533,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] erase	:";
 	write_ft_vector(ft_outfile, ft_six, "[*] erase	:");
 	write_stl_vector(stl_outfile, stl_six, "[*] erase	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_a(5,0);
@@ -463,6 +548,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] swap	:";
 	write_ft_vector(ft_outfile, ft_b, "[*] swap	:");
 	write_stl_vector(stl_outfile, stl_b, "[*] swap	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::vector<int> stl_seven(5,4);
@@ -473,6 +560,8 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	std::cout << "[*] clear	:";
 	write_ft_vector(ft_outfile, ft_seven, "[*] clear	:");
 	write_stl_vector(stl_outfile, stl_seven, "[*] clear	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -480,7 +569,7 @@ void	modifyers_functions(std::ofstream & ft_outfile, std::ofstream & stl_outfile
 	stl_outfile << std::endl;
 }
 
-void	non_member_overloads(void)
+static void	non_member_overloads(void)
 {
 	std::cout << "  > NON MEMBER OVERLOADS" << std::endl;
 

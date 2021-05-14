@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:31:04 by user42            #+#    #+#             */
-/*   Updated: 2021/05/13 16:51:10 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 16:05:27 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ class	map
 		~map();
 
 		/* OPERATOR OVERLOADS */
-		map &					operator=(map const & rhs);
+		map &										operator=(map const & rhs);
 
 
 		/* ITERATOR FUNCTIONS */
@@ -119,28 +119,13 @@ class	map
 		ft::Pair<const_iterator,const_iterator>		equal_range(key_type const & k)					const;
 
 
-
-		/* DEBUG / EXPERIMENTATION FUNCTIONS
-		map(key_type const & key, mapped_type const & value);
-		static void				inorder(Node * root);					// Recursive
-		static void				postorder(Node * root);					// Recursive
-		static void				preorder(Node * root);					// Recursive
-		static void				parents_preorder(Node * root);			// Recursive
-		void					printInorder(void)								const;
-		void					printPostorder(void)							const;
-		void					printPreorder(void)								const;
-		void					iterative_inorder_print(void)					const;
-		void					rev_iterative_inorder_print(void)				const;
-		key_type				rootKey() { return this->_root->data.first; } */
-
-
-
 	private:
 		/* PRIVATE MEMBER ATTRIBUTES */
 		Node *		_root;
 		size_type	_size;
 
 		/* PRIVATE HELPER FUNCTIONS */
+		void					parents_preorder(Node * root);
 		Node *					iterator_node(iterator position);
 		void					setPastTheEnd(Node * last);
 		void					setBeforeBeginning(Node * last);

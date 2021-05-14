@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_iterator.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qroland <qroland@student.42.fr>            +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/11 15:02:42 by user42            #+#    #+#             */
-/*   Updated: 2021/05/12 13:58:22 by qroland          ###   ########.fr       */
+/*   Updated: 2021/05/14 11:10:11 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 class	iterator
 {
-		public:
+	public:
 		typedef typename allocator_type::difference_type		difference_type;
 		typedef typename allocator_type::value_type				value_type;
 		typedef typename allocator_type::pointer				pointer;

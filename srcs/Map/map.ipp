@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:31:25 by user42            #+#    #+#             */
-/*   Updated: 2021/05/13 16:49:51 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 16:06:12 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,20 @@
 /*
 ** ----- PRIVATE HELPER FUNCTIONS -----
 */
+template < class K, class T, class C, class A >
+void		ft::map<K,T,C,A>::parents_preorder(Node * root)
+{
+	if (root == 0)
+		return ;
+
+	if (root->left)
+		root->left->parent = root;
+	if (root->right)
+		root->right->parent = root;
+	parents_preorder(root->left);
+	parents_preorder(root->right);
+}
+
 template < class K, class T, class C, class A >
 typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::iterator_node(iterator position)
 {
@@ -180,6 +194,117 @@ typename ft::map<K,T,C,A>::Node *				ft::map<K,T,C,A>::range_to_BST(InputIterato
 	return (root);
 }
 
+template < class K, class T, class C, class A >
+void															ft::map<K,T,C,A>::insert_from_empty(ft::Pair<iterator,bool> & result, value_type const & val)
+{
+	Node * new_node = new Node(val);
+	this->_root = new_node;
+	this->setBeforeBeginning(this->_root);
+	this->setPastTheEnd(this->_root);
+
+	result.first = this->_root;
+	result.second = true;
+}
+
+template < class K, class T, class C, class A >
+void															ft::map<K,T,C,A>::insert_smallest(Node * prec, value_type const & val)
+{
+	Node * new_node = new Node(val);
+
+	new_node->parent = prec;
+	new_node->left = prec->left;
+	prec->left->parent = new_node;
+	prec->left = new_node;
+}
+
+template < class K, class T, class C, class A >
+void															ft::map<K,T,C,A>::insert_biggest(Node * prec, value_type const & val)
+{
+	Node * new_node = new Node(val);
+
+	new_node->parent = prec;
+	new_node->right = prec->right;
+	prec->right->parent = new_node;
+	prec->right = new_node;
+}
+
+template < class K, class T, class C, class A >
+typename ft::map<K,T,C,A>::Node *								ft::map<K,T,C,A>::recursive_insert(Node * node, value_type const & val)
+{
+	if (!node)
+		return new Node(val);
+	
+	if (val.first > node->data.first)
+	{
+		node->right = recursive_insert(node->right, val);
+		if (node->right)
+			node->right->parent = node;
+	}
+	else
+	{
+		node->left = recursive_insert(node->left, val);
+		if (node->left)
+			node->left->parent = node;
+	}
+	return (node);
+}
+
+template < class K, class T, class C, class A >
+void															ft::map<K,T,C,A>::delete_node(Node * pos)
+{
+	if (pos->left == 0 && pos->right == 0)
+	{
+		if (pos->parent && pos == pos->parent->left)
+		{
+			pos->parent->left = 0;
+			delete pos;
+		}
+		else if (pos->parent && pos == pos->parent->right)
+		{
+			pos->parent->right = 0;
+			delete pos;
+		}
+	}
+	else if (pos->left == 0)
+	{
+		if (pos->parent && pos == pos->parent->left)
+		{
+			pos->right->parent = pos->parent;
+			pos->parent->left = pos->right;
+			delete pos;
+		}
+		else if (pos->parent && pos == pos->parent->right)
+		{
+			pos->right->parent = pos->parent;
+			pos->parent->right = pos->right;
+			delete pos;
+		}
+	}
+	else if (pos->right == 0)
+	{
+		if (pos->parent && pos == pos->parent->left)
+		{
+			pos->left->parent = pos->parent;
+			pos->parent->left = pos->left;
+			delete pos;
+		}
+		else if (pos->parent && pos == pos->parent->right)
+		{
+			pos->left->parent = pos->parent;
+			pos->parent->right = pos->left;
+			delete pos;
+		}
+	}
+	else
+	{
+		Node * successor = next(pos);
+		pos->data.first = successor->data.first;
+		pos->data.second = successor->data.second;
+		delete_node(successor);
+	}
+}
+
+
 
 /*
 ** ----- CONSTRUCTORS / DESTRUCTORS -----
@@ -221,6 +346,7 @@ ft::map<K,T,C,A>::~map()
 { if (!this->empty()) recursive_postorder_deletion(this->_root); }
 
 
+
 /*
 ** ----- OPERATOR OVERLOADS -----
 */
@@ -239,6 +365,7 @@ ft::map<K,T,C,A> &						ft::map<K,T,C,A>::operator=(map const & rhs)
 	recursive_copy(rhs._root, this->_root);
 	return (*this);
 }
+
 
 
 /*
@@ -301,10 +428,10 @@ typename ft::map<K,T,C,A>::const_reverse_iterator			ft::map<K,T,C,A>::rend(void)
 }
 
 
+
 /*
 ** ----- CAPACITY FUNCTIONS -----
 */
-
 template < class K, class T, class C, class A >
 typename ft::map<K,T,C,A>::size_type						ft::map<K,T,C,A>::size(void) const
 { return (this->_size); }
@@ -316,6 +443,7 @@ typename ft::map<K,T,C,A>::size_type		ft::map<K,T,C,A>::max_size(void) const
 template < class K, class T, class C, class A >
 bool														ft::map<K,T,C,A>::empty(void) const
 { return (this->_size <= 0); }
+
 
 
 /*
@@ -440,118 +568,6 @@ void															ft::map<K,T,C,A>::clear(void)
 	this->_size = 0;
 }
 
-template < class K, class T, class C, class A >
-void															ft::map<K,T,C,A>::delete_node(Node * pos)
-{
-	if (pos->left == 0 && pos->right == 0)
-	{
-		if (pos->parent && pos == pos->parent->left)
-		{
-			pos->parent->left = 0;
-			delete pos;
-		}
-		else if (pos->parent && pos == pos->parent->right)
-		{
-			pos->parent->right = 0;
-			delete pos;
-		}
-	}
-	else if (pos->left == 0)
-	{
-		if (pos->parent && pos == pos->parent->left)
-		{
-			pos->right->parent = pos->parent;
-			pos->parent->left = pos->right;
-			delete pos;
-		}
-		else if (pos->parent && pos == pos->parent->right)
-		{
-			pos->right->parent = pos->parent;
-			pos->parent->right = pos->right;
-			delete pos;
-		}
-	}
-	else if (pos->right == 0)
-	{
-		if (pos->parent && pos == pos->parent->left)
-		{
-			pos->left->parent = pos->parent;
-			pos->parent->left = pos->left;
-			delete pos;
-		}
-		else if (pos->parent && pos == pos->parent->right)
-		{
-			pos->left->parent = pos->parent;
-			pos->parent->right = pos->left;
-			delete pos;
-		}
-	}
-	else
-	{
-		Node * successor = next(pos);
-		pos->data.first = successor->data.first;
-		pos->data.second = successor->data.second;
-		delete_node(successor);
-	}
-}
-
-
-
-
-template < class K, class T, class C, class A >
-void															ft::map<K,T,C,A>::insert_from_empty(ft::Pair<iterator,bool> & result, value_type const & val)
-{
-	Node * new_node = new Node(val);
-	this->_root = new_node;
-	this->setBeforeBeginning(this->_root);
-	this->setPastTheEnd(this->_root);
-
-	result.first = this->_root;
-	result.second = true;
-}
-
-template < class K, class T, class C, class A >
-void															ft::map<K,T,C,A>::insert_smallest(Node * prec, value_type const & val)
-{
-	Node * new_node = new Node(val);
-
-	new_node->parent = prec;
-	new_node->left = prec->left;
-	prec->left->parent = new_node;
-	prec->left = new_node;
-}
-
-template < class K, class T, class C, class A >
-void															ft::map<K,T,C,A>::insert_biggest(Node * prec, value_type const & val)
-{
-	Node * new_node = new Node(val);
-
-	new_node->parent = prec;
-	new_node->right = prec->right;
-	prec->right->parent = new_node;
-	prec->right = new_node;
-}
-
-template < class K, class T, class C, class A >
-typename ft::map<K,T,C,A>::Node *								ft::map<K,T,C,A>::recursive_insert(Node * node, value_type const & val)
-{
-	if (!node)
-		return new Node(val);
-	
-	if (val.first > node->data.first)
-	{
-		node->right = recursive_insert(node->right, val);
-		if (node->right)
-			node->right->parent = node;
-	}
-	else
-	{
-		node->left = recursive_insert(node->left, val);
-		if (node->left)
-			node->left->parent = node;
-	}
-	return (node);
-}
 
 
 /*
@@ -571,8 +587,6 @@ typename ft::map<K,T,C,A>::value_compare						ft::map<K,T,C,A>::value_comp(void)
 	value_compare v_comp(internal_comp);
 	return (v_comp);
 }
-
-
 
 
 
@@ -696,130 +710,3 @@ ft::Pair<typename ft::map<K,T,C,A>::const_iterator, typename ft::map<K,T,C,A>::c
 		return (pair);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-/* DEBUG / EXPERIMENTATION FUNCTIONS
-template < class K, class T, class C, class A >
-ft::map<K,T,C,A>::map(key_type const & key, mapped_type const & value)
-{
-	this->_root = new Node(key, value);
-
-	this->_root->left = new Node(key - 5, value);
-	this->_root->left->parent = this->_root;
-
-	this->_root->left->left = new Node(key - 7, value);
-	this->_root->left->left->parent = this->_root->left;
-
-	this->_root->left->right = new Node(key - 3, value);
-	this->_root->left->right->parent = this->_root->left;
-
-	this->_root->left->left->left = new Node(key - 9, value);
-	this->_root->left->left->left->parent = this->_root->left->left;
-
-	this->_root->right = new Node(key + 5, value);
-	this->_root->right->parent = this->_root;
-
-	this->_root->right->right = new Node(key + 10, value);
-	this->_root->right->right->parent = this->_root->right;
-
-	this->setBeforeBeginning(leftmost(this->_root));
-	this->setPastTheEnd(rightmost(this->_root));
-
-	this->_size = 7;
-}
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::inorder(Node * root)
-{
-	if (root == 0)
-		return ;
-
-	inorder(root->left);
-	std::cout << root->data.first << " ";
-	inorder(root->right);
-}
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::postorder(Node * root)
-{
-	if (root == 0)
-		return ;
-
-	postorder(root->left);
-	postorder(root->right);
-	std::cout << root->data.first << " ";
-}
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::preorder(Node * root)
-{
-	if (root == 0)
-		return ;
-
-	std::cout << root->data.first << " ";
-	preorder(root->left);
-	preorder(root->right);
-
-}
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::parents_preorder(Node * root)
-{
-	if (root == 0)
-		return ;
-
-	if (root->left)
-		root->left->parent = root;
-	if (root->right)
-		root->right->parent = root;
-	parents_preorder(root->left);
-	parents_preorder(root->right);
-}
-
-
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::printInorder(void) const
-{ inorder(this->_root); }
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::printPostorder(void) const
-{ postorder(this->_root); }
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::printPreorder(void) const
-{ preorder(this->_root);}
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::rev_iterative_inorder_print(void) const
-{
-	Node * iterator = rightmost(this->_root);
-	while (iterator)
-	{
-		std::cout << iterator->data.first << " ";
-		iterator = prev(iterator);
-	}
-	std::cout << std::endl;
-}
-
-
-template < class K, class T, class C, class A >
-void		ft::map<K,T,C,A>::iterative_inorder_print(void) const
-{
-	Node * iterator = leftmost(this->_root);
-	while (iterator)
-	{
-		std::cout << iterator->data.first << " ";
-		iterator = next(iterator);
-	}
-	std::cout << std::endl;
-} */

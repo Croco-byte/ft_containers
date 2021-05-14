@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 10:51:01 by user42            #+#    #+#             */
-/*   Updated: 2021/05/11 15:49:50 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 16:02:27 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ class	list
 
 
 		/* ITERATORS AND ITERATOR TYPEDEFs */
-		#include "../Iterators/bidirectional/iterator.hpp"
-		#include "../Iterators/bidirectional/const_iterator.hpp"
+		#include "../Iterators/bidirectional/list/iterator.hpp"
+		#include "../Iterators/bidirectional/list/const_iterator.hpp"
 		typedef				ft::reverse_iterator< iterator >		reverse_iterator;
 		typedef				ft::reverse_iterator< const_iterator >	const_reverse_iterator;
 		typedef typename	ft::list< value_type >::iterator		InputIterator;

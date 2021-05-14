@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 13:25:14 by user42            #+#    #+#             */
-/*   Updated: 2021/05/09 14:55:18 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 15:55:29 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,53 @@
 # define CYAN		"\033[0;36m"
 # define NC			"\033[0m"
 
-void	check(void)
+static void	check(void)
 {
-	if (!(system("diff test_results/ft_stack.out test_results/stl_stack.out")))
-		std::cout << GREEN << "			OK" << NC << std::endl;
-	else
+		std::ifstream ft,stl;
+	ft.open("test_results/ft_stack.out");
+	stl.open("test_results/stl_stack.out");
+
+	/* Compare number of lines */
+	int cft(0),cstl(0);
+	std::string str;
+	while (!ft.eof())
+	{
+		getline(ft,str);
+		cft++;
+	}
+	ft.clear();
+	ft.seekg(0,std::ios::beg);
+	while (!stl.eof())
+	{
+		getline(stl,str);
+		cstl++;
+	}
+	stl.clear();
+	stl.seekg(0,std::ios::beg);
+	if (cft != cstl)
 	{
 		std::cout << RED << "			KO" << NC << std::endl;
 		exit(1);
 	}
+
+	/* Compare files line by line */
+	std::string ftstr;
+	std::string stlstr;
+	
+	while (!ft.eof())
+	{
+		getline(ft,ftstr);
+		getline(stl,stlstr);
+		if (ftstr != stlstr)
+		{
+			std::cout << RED << "			KO" << NC << std::endl;
+			exit(1);
+		}
+	}
+	std::cout << GREEN << "			OK" << NC << std::endl;
 }
 
-void	constructor_operator_tests(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
+static void	constructor_operator_tests(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 {
 	std::cout << "  > CONSTRUCTORS / OPERATORS" << std::endl;
 	ft_outfile << "	> CONSTRUCTORS / OPERATORS" << std::endl;
@@ -78,12 +113,20 @@ void	constructor_operator_tests(std::ofstream & stl_outfile, std::ofstream & ft_
 	}
 
 	std::cout << "[*] Default	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] From_c	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Copy	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -91,7 +134,7 @@ void	constructor_operator_tests(std::ofstream & stl_outfile, std::ofstream & ft_
 	stl_outfile << std::endl;
 }
 
-void	capacity_functions(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
+static void	capacity_functions(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 {
 	std::cout << "  > CONSTRUCTORS / OPERATORS" << std::endl;
 	ft_outfile << "	> CONSTRUCTORS / OPERATORS" << std::endl;
@@ -129,8 +172,12 @@ void	capacity_functions(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 	}
 
 	std::cout << "[*] size	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] empty	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -138,7 +185,7 @@ void	capacity_functions(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 	stl_outfile << std::endl;
 }
 
-void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
+static void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 {
 	std::cout << "  > ELEMENT ACCESS" << std::endl;
 	ft_outfile << "	> ELEMENT ACCESS" << std::endl;
@@ -161,6 +208,8 @@ void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream & ft_ou
 		ft_outfile << "mystack.top() is now " << mystack.top() << '\n';
 	}
 	std::cout << "[*]  top	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -197,8 +246,12 @@ void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream & ft_ou
 	}
 
 	std::cout << "[*] push	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*]  pop	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -206,7 +259,7 @@ void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream & ft_ou
 	stl_outfile << std::endl;
 }
 
-void	non_member_overloads(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
+static void	non_member_overloads(std::ofstream & stl_outfile, std::ofstream & ft_outfile)
 {
 	std::cout << "  > ELEMENT ACCESS" << std::endl;
 	ft_outfile << "	> ELEMENT ACCESS" << std::endl;
@@ -256,16 +309,28 @@ void	non_member_overloads(std::ofstream & stl_outfile, std::ofstream & ft_outfil
 	}
 
 	std::cout << "[*] Operator==	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator!=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator<	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator<=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator>	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator>=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 }
 
@@ -281,8 +346,6 @@ void	stack_tests(void)
 	element_access_modifyers(stl_outfile, ft_outfile);
 	non_member_overloads(stl_outfile, ft_outfile);
 	
-
-
 	ft_outfile.close();
 	stl_outfile.close();
 }

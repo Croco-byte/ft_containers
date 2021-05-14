@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/05 12:40:15 by user42            #+#    #+#             */
-/*   Updated: 2021/05/09 11:28:27 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/14 15:53:27 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,19 +52,54 @@ void	write_ft_list(std::ofstream & ft_outfile, ft::list<T> const & list, std::st
 	ft_outfile << "[X]" << std::endl;
 }
 
-void	check(void)
+static void	check(void)
 {
-	if (!(system("diff test_results/ft_list.out test_results/stl_list.out")))
-		std::cout << GREEN << "			OK" << NC << std::endl;
-	else
+	std::ifstream ft,stl;
+	ft.open("test_results/ft_list.out");
+	stl.open("test_results/stl_list.out");
+
+	/* Compare number of lines */
+	int cft(0),cstl(0);
+	std::string str;
+	while (!ft.eof())
+	{
+		getline(ft,str);
+		cft++;
+	}
+	ft.clear();
+	ft.seekg(0,std::ios::beg);
+	while (!stl.eof())
+	{
+		getline(stl,str);
+		cstl++;
+	}
+	stl.clear();
+	stl.seekg(0,std::ios::beg);
+	if (cft != cstl)
 	{
 		std::cout << RED << "			KO" << NC << std::endl;
 		exit(1);
 	}
+
+	/* Compare files line by line */
+	std::string ftstr;
+	std::string stlstr;
+	
+	while (!ft.eof())
+	{
+		getline(ft,ftstr);
+		getline(stl,stlstr);
+		if (ftstr != stlstr)
+		{
+			std::cout << RED << "			KO" << NC << std::endl;
+			exit(1);
+		}
+	}
+	std::cout << GREEN << "			OK" << NC << std::endl;
 }
 
 
-void	constructor_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	constructor_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > CONSTRUCTOR" << std::endl;
 	ft_outfile << "	> CONSTRUCTOR" << std::endl;
@@ -86,21 +121,29 @@ void	constructor_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl
 	std::cout << "[*] Default	:";
 	write_ft_list(ft_outfile, ft_first, "[*] Default	:");
 	write_stl_list(stl_outfile, stl_first, "[*] Default	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Fill	:";
 	write_ft_list(ft_outfile, ft_second, "[*] Fill	:");
 	write_stl_list(stl_outfile, stl_second, "[*] Fill	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Range	:";
 	write_ft_list(ft_outfile, ft_third, "[*] Range	:");
 	write_stl_list(stl_outfile, stl_third, "[*] Range	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] Copy	:";
 	write_ft_list(ft_outfile, ft_fourth, "[*] Copy	:");
 	write_stl_list(stl_outfile, stl_fourth, "[*] Copy	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -124,6 +167,8 @@ void	constructor_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl
 	std::cout << "[*] Operator=	:";
 	write_ft_list(ft_outfile, ft_assigned, "[*] Operator=	:");
 	write_stl_list(stl_outfile, stl_assigned, "[*] Operator=	:");
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 
@@ -132,7 +177,7 @@ void	constructor_operators_tests(std::ofstream & ft_outfile, std::ofstream & stl
 	stl_outfile << std::endl;
 }
 
-void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > ITERATORS" << std::endl;
 	ft_outfile << "	> ITERATORS" << std::endl;
@@ -152,9 +197,13 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	for (std::list<int>::iterator it = stl_first.begin(); it != stl_first.end(); it++)
 		stl_outfile << *it << ' ';
 	stl_outfile << std::endl;
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*]  end	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 
@@ -167,9 +216,13 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	for (std::list<int>::reverse_iterator it = stl_first.rbegin(); it != stl_first.rend(); it++)
 		stl_outfile << *it << ' ';
 	stl_outfile << std::endl;
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << "[*] rend	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -177,7 +230,7 @@ void	iterator_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 }
 
-void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > CAPACITY" << std::endl;
 	ft_outfile << "	> CAPACITY" << std::endl;
@@ -204,6 +257,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "3. size: " << myints2.size() << std::endl;
 
 	std::cout << "[*] size	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> mylist;
@@ -215,6 +270,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "max_size: " << mylist2.max_size() << "\n";
 	
 	std::cout << "[*] max_size	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_second;
@@ -238,6 +295,8 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	ft_outfile << "[*] empty	:" << std::endl << sum << std::endl;
 
 	std::cout << "[*] empty	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -245,7 +304,7 @@ void	capacity_functions_tests(std::ofstream & ft_outfile, std::ofstream & stl_ou
 	stl_outfile << std::endl;
 }
 
-void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > ELEMENT ACCESS" << std::endl;
 	ft_outfile << "	> ELEMENT ACCESS" << std::endl;
@@ -266,6 +325,8 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	ft_outfile << "mylist.front() is now " << ft_second.front() << '\n';
 
 	std::cout << "[*] front	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	stl_outfile << "[*] back	:" << std::endl;
@@ -274,6 +335,8 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	ft_outfile << "mylist.back() is now " << ft_second.back() << '\n';
 
 	std::cout << "[*] back	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -281,7 +344,7 @@ void	element_access_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	stl_outfile << std::endl;
 }
 
-void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > MODIFYERS" << std::endl;
 	ft_outfile << "	> MODIFYERS" << std::endl;
@@ -302,6 +365,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	write_ft_list(ft_outfile, second, "");
 
 	std::cout << "[*] assign	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_third (2,100);
@@ -315,6 +380,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	write_ft_list(ft_outfile, ft_third, "[*] push_front	:");
 
 	std::cout << "[*] push_front	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	stl_outfile << "[*] pop_front	:" << std::endl;
@@ -344,6 +411,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << "\nFinal size of list is " << ft_4.size() << std::endl;
 
 	std::cout << "[*] pop_front	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_5;
@@ -365,6 +434,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << std::endl;
 
 	std::cout << "[*] push_back	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	stl_outfile << "[*] pop_back	:" << std::endl;
@@ -394,6 +465,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << "\nFinal size of list is " << ft_6.size() << std::endl;
 
 	std::cout << "[*] pop_back	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	ft_outfile << "[*] insert	:" << std::endl;
@@ -429,6 +502,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 
 	std::cout << "[*] insert	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_8;
@@ -466,6 +541,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << std::endl;
 
 	std::cout << "[*] erase	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_f (3,100);
@@ -495,6 +572,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << std::endl;
 
 	std::cout << "[*] swap	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::list<int> stl_9;
@@ -520,6 +599,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << std::endl;
 
 	std::cout << "[*] resize	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 {
@@ -562,6 +643,8 @@ void	modifyers_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	ft_outfile << std::endl;
 }
 	std::cout << "[*] clear	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -598,7 +681,7 @@ bool compare_nocase (const std::string& first, const std::string& second)
 bool mycomparison (double first, double second)
 { return ( int(first)<int(second) ); }
 
-void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > OPERATIONS" << std::endl;
 	ft_outfile << "	> OPERATIONS" << std::endl;
@@ -668,6 +751,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] splice	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -700,6 +785,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] remove	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -740,6 +827,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] remove_if	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -788,6 +877,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] unique	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -834,6 +925,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] sort	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -858,6 +951,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] reverse	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	{
@@ -912,6 +1007,8 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	}
 
 	std::cout << "[*] merge	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 
 	std::cout << std::endl;
@@ -919,7 +1016,7 @@ void	operations_tests(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 	stl_outfile << std::endl;
 }
 
-void	non_member_overloads(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
+static void	non_member_overloads(std::ofstream & ft_outfile, std::ofstream & stl_outfile)
 {
 	std::cout << "  > NON-MEMBER OVERLOADS" << std::endl;
 	ft_outfile << "	> NON-MEMBER OVERLOADS" << std::endl;
@@ -969,16 +1066,28 @@ void	non_member_overloads(std::ofstream & ft_outfile, std::ofstream & stl_outfil
 	}
 
 	std::cout << "[*] Operator==	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator!=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator<	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator<=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator>	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 	std::cout << "[*] Operator>=	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
 	check();
 }
 
