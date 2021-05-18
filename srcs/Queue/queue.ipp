@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:03:58 by user42            #+#    #+#             */
-/*   Updated: 2021/05/09 15:19:10 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/15 15:59:24 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,13 @@ template < typename T, class Container >
 typename ft::queue<T,Container>::value_type const &		ft::queue<T,Container>::back(void) const
 { return (this->_c.back()); }
 
+template < typename T, class Container >
+typename ft::queue<T,Container>::value_type &			ft::queue<T,Container>::front(void)
+{ return (this->_c.front()); }
+
+template < typename T, class Container >
+typename ft::queue<T,Container>::value_type const &		ft::queue<T,Container>::front(void) const
+{ return (this->_c.front()); }
 
 /*
 ** ------ MODIFYERS FUNCTIONS ------

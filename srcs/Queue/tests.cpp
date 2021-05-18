@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:14:03 by user42            #+#    #+#             */
-/*   Updated: 2021/05/14 15:54:59 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/15 16:17:44 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,27 @@ static void	element_access_modifyers(std::ofstream & stl_outfile, std::ofstream 
 		ft_outfile << "myqueue.back() is now " << myqueue.back() << '\n';
 	}
 	std::cout << "[*]  back	:";
+	stl_outfile.flush();
+	ft_outfile.flush();
+	check();
+
+	{
+		std::queue<int> myqueue;
+		myqueue.push(77);
+		myqueue.push(16);
+		myqueue.front() -= myqueue.back();
+		stl_outfile << "[*] front :" << std::endl;
+		stl_outfile << "myqueue.front() is now " << myqueue.front() << '\n';
+	}
+	{
+		ft::queue<int> myqueue;
+		myqueue.push(77);
+		myqueue.push(16);
+		myqueue.front() -= myqueue.back();
+		ft_outfile << "[*] front :" << std::endl;
+		ft_outfile << "myqueue.front() is now " << myqueue.front() << '\n';
+	}
+	std::cout << "[*] front	:";
 	stl_outfile.flush();
 	ft_outfile.flush();
 	check();

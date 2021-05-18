@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/09 15:04:07 by user42            #+#    #+#             */
-/*   Updated: 2021/05/09 15:22:07 by user42           ###   ########.fr       */
+/*   Updated: 2021/05/15 15:59:53 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ class	queue
 		/* ELEMENT ACCESS FUNCTIONS */
 		value_type &			back(void);
 		value_type const &		back(void)					const;
+		value_type &			front(void);
+		value_type const &		front(void)					const;
 
 		/* MODIFYERS FUNCTIONS */
 		void					push(value_type const & val);
@@ -91,6 +93,7 @@ class	queue
 	
 	---> Element access
 		> back								OK
+		> front								OK
 	
 	---> Modifyers
 		> push								OK
